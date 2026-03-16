@@ -7,9 +7,9 @@ export default function AssignmentForm({ onSuccess }) {
   const [formData, setFormData] = useState({
     title: '',
     course: '',
-    description: '',
     deadline: '',
-    priority: 'Medium'
+    priority: 'Medium',
+    status: 'Pending'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -44,9 +44,9 @@ export default function AssignmentForm({ onSuccess }) {
       setFormData({
         title: '',
         course: '',
-        description: '',
         deadline: '',
-        priority: 'Medium'
+        priority: 'Medium',
+        status: 'Pending'
       });
 
       // Notify parent to refresh assignments
@@ -89,7 +89,7 @@ export default function AssignmentForm({ onSuccess }) {
 
         <div>
           <label htmlFor="course" className="block text-sm font-semibold text-gray-700 mb-2.5">
-            Course *
+            Course
           </label>
           <input
             type="text"
@@ -97,30 +97,14 @@ export default function AssignmentForm({ onSuccess }) {
             name="course"
             value={formData.course}
             onChange={handleChange}
-            required
             className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 placeholder:text-gray-400"
             placeholder="e.g., CS401"
           />
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2.5">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows="3"
-            className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 placeholder:text-gray-400 resize-none"
-            placeholder="Assignment details..."
-          />
-        </div>
-
-        <div>
           <label htmlFor="deadline" className="block text-sm font-semibold text-gray-700 mb-2.5">
-            Deadline *
+            Deadline
           </label>
           <input
             type="date"
@@ -128,27 +112,43 @@ export default function AssignmentForm({ onSuccess }) {
             name="deadline"
             value={formData.deadline}
             onChange={handleChange}
-            required
             className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900"
           />
         </div>
 
         <div>
           <label htmlFor="priority" className="block text-sm font-semibold text-gray-700 mb-2.5">
-            Priority *
+            Priority
           </label>
           <select
             id="priority"
             name="priority"
             value={formData.priority}
             onChange={handleChange}
-            required
             className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 cursor-pointer"
           >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
             <option value="Urgent">Urgent</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="status" className="block text-sm font-semibold text-gray-700 mb-2.5">
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 cursor-pointer"
+          >
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Not Started">Not Started</option>
           </select>
         </div>
 

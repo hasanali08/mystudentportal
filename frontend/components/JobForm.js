@@ -7,11 +7,9 @@ export default function JobForm({ onSuccess }) {
   const [formData, setFormData] = useState({
     company: '',
     role: '',
-    location: '',
     applied_date: '',
     status: 'Applied',
-    notes: '',
-    job_link: ''
+    notes: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -46,11 +44,9 @@ export default function JobForm({ onSuccess }) {
       setFormData({
         company: '',
         role: '',
-        location: '',
         applied_date: '',
         status: 'Applied',
-        notes: '',
-        job_link: ''
+        notes: ''
       });
 
       // Notify parent to refresh jobs
@@ -107,21 +103,6 @@ export default function JobForm({ onSuccess }) {
         </div>
 
         <div>
-          <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mb-2.5">
-            Location
-          </label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 placeholder:text-gray-400"
-            placeholder="e.g., San Francisco, CA"
-          />
-        </div>
-
-        <div>
           <label htmlFor="applied_date" className="block text-sm font-semibold text-gray-700 mb-2.5">
             Applied Date
           </label>
@@ -152,21 +133,6 @@ export default function JobForm({ onSuccess }) {
             <option value="Rejected">Rejected</option>
             <option value="Withdrawn">Withdrawn</option>
           </select>
-        </div>
-
-        <div>
-          <label htmlFor="job_link" className="block text-sm font-semibold text-gray-700 mb-2.5">
-            Job Link
-          </label>
-          <input
-            type="url"
-            id="job_link"
-            name="job_link"
-            value={formData.job_link}
-            onChange={handleChange}
-            className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 placeholder:text-gray-400"
-            placeholder="https://..."
-          />
         </div>
 
         <div>

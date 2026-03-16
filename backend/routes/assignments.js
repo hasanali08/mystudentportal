@@ -17,24 +17,24 @@ router.post("/", authenticateToken, async (req, res) => {
     const {
       title,
       course,
-      description,
       deadline,
-      priority
+      priority,
+      status
     } = req.body;
 
     // Validate required fields
-    if (!title || !course || !deadline || !priority) {
+    if (!title) {
       return res.status(400).json({
-        error: "Title, course, deadline, and priority are required"
+        error: "Title is required"
       });
     }
 
     const result = await pool.query(
       `INSERT INTO assignments
-      (user_id, title, course, description, deadline, priority)
+      (user_id, title, course, deadline, status, priority)
       VALUES ($1,$2,$3,$4,$5,$6)
       RETURNING *`,
-      [user_id, title, course, description, deadline, priority]
+      [user_id, title, course || null, deadline || null, status || 'Pending', priority || null]
     );
 
     res.json(result.rows[0]);
@@ -125,7 +125,6 @@ router.put("/:id", authenticateToken, async (req, res) => {
     const {
       title,
       course,
-      description,
       deadline,
       priority,
       status
@@ -135,13 +134,12 @@ router.put("/:id", authenticateToken, async (req, res) => {
       `UPDATE assignments
       SET title=$1,
           course=$2,
-          description=$3,
-          deadline=$4,
-          priority=$5,
-          status=$6
-      WHERE id=$7 AND user_id=$8
+          deadline=$3,
+          priority=$4,
+          status=$5
+      WHERE id=$6 AND user_id=$7
       RETURNING *`,
-      [title, course, description, deadline, priority, status, id, user_id]
+      [title, course, deadline, priority, status, id, user_id]
     );
 
     if (result.rows.length === 0) {

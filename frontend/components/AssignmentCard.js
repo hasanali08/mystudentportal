@@ -47,11 +47,6 @@ export default function AssignmentCard({ assignment }) {
           <p className="text-sm text-gray-600 mb-2 font-medium">
             <span className="text-gray-500">Course:</span> {assignment.course || 'N/A'}
           </p>
-          {assignment.description && (
-            <p className="text-sm text-gray-500 mt-3 line-clamp-2 leading-relaxed">
-              {assignment.description}
-            </p>
-          )}
         </div>
       </div>
       

@@ -41,10 +41,23 @@ export default function JobsPage() {
 
   const handleStatusUpdate = async (id, status) => {
     try {
+      // Find the job to get all its current data
+      const job = jobs.find(j => j.id === id);
+      if (!job) {
+        throw new Error('Job not found');
+      }
+
+      // Update with all required fields
       const response = await fetch(`http://localhost:5000/jobs/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({
+          company: job.company,
+          role: job.role || null,
+          applied_date: job.applied_date || null,
+          status: status,
+          notes: job.notes || null
+        }),
       });
 
       if (!response.ok) {

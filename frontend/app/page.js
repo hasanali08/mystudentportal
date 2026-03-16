@@ -7,26 +7,66 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
   const [assignments, setAssignments] = useState([]);
+  const [totalAssignments, setTotalAssignments] = useState(0);
+  const [pendingTasks, setPendingTasks] = useState(0);
+  const [activeApplications, setActiveApplications] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { getAuthHeaders } = useAuth();
 
   useEffect(() => {
-    fetchAssignments();
+    fetchDashboardData();
   }, []);
 
-  const fetchAssignments = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/assignments', {
-        headers: getAuthHeaders()
-      });
-      if (!response.ok) {
+      setLoading(true);
+      
+      // Fetch all data in parallel
+      const [assignmentsRes, tasksRes, jobsRes] = await Promise.all([
+        fetch('http://localhost:5000/assignments', {
+          headers: getAuthHeaders()
+        }),
+        fetch('http://localhost:5000/tasks', {
+          headers: getAuthHeaders()
+        }),
+        fetch('http://localhost:5000/jobs', {
+          headers: getAuthHeaders()
+        })
+      ]);
+
+      if (!assignmentsRes.ok) {
         throw new Error('Failed to load assignments');
       }
-      const data = await response.json();
-      // Get only upcoming assignments (limit to 5)
-      const upcoming = data.slice(0, 5);
+      if (!tasksRes.ok) {
+        throw new Error('Failed to load tasks');
+      }
+      if (!jobsRes.ok) {
+        throw new Error('Failed to load jobs');
+      }
+
+      const assignmentsData = await assignmentsRes.json();
+      const tasksData = await tasksRes.json();
+      const jobsData = await jobsRes.json();
+
+      // Set total assignments count
+      setTotalAssignments(assignmentsData.length);
+
+      // Get only upcoming assignments (limit to 5) for display
+      const upcoming = assignmentsData.slice(0, 5);
       setAssignments(upcoming);
+
+      // Count pending tasks (not completed)
+      const pendingCount = tasksData.filter(task => !task.completed).length;
+      setPendingTasks(pendingCount);
+
+      // Count active applications (not rejected, closed, or declined)
+      const inactiveStatuses = ['Rejected', 'Closed', 'Declined', 'Withdrawn'];
+      const activeCount = jobsData.filter(job => 
+        !job.status || !inactiveStatuses.includes(job.status)
+      ).length;
+      setActiveApplications(activeCount);
+
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -104,19 +144,25 @@ export default function Dashboard() {
         </Link>
       </div>
 
-      {/* Statistics Placeholders */}
+      {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl border border-purple-200/60 shadow-soft p-8 hover:shadow-purple transition-all duration-300">
           <h3 className="text-sm font-semibold text-purple-600 mb-3 uppercase tracking-wide">Total Assignments</h3>
-          <p className="text-4xl font-semibold gradient-text tracking-tight">-</p>
+          <p className="text-4xl font-semibold gradient-text tracking-tight">
+            {loading ? '-' : totalAssignments}
+          </p>
         </div>
         <div className="bg-white rounded-2xl border border-purple-200/60 shadow-soft p-8 hover:shadow-purple transition-all duration-300">
           <h3 className="text-sm font-semibold text-purple-600 mb-3 uppercase tracking-wide">Pending Tasks</h3>
-          <p className="text-4xl font-semibold gradient-text tracking-tight">-</p>
+          <p className="text-4xl font-semibold gradient-text tracking-tight">
+            {loading ? '-' : pendingTasks}
+          </p>
         </div>
         <div className="bg-white rounded-2xl border border-purple-200/60 shadow-soft p-8 hover:shadow-purple transition-all duration-300">
           <h3 className="text-sm font-semibold text-purple-600 mb-3 uppercase tracking-wide">Active Applications</h3>
-          <p className="text-4xl font-semibold gradient-text tracking-tight">-</p>
+          <p className="text-4xl font-semibold gradient-text tracking-tight">
+            {loading ? '-' : activeApplications}
+          </p>
         </div>
       </div>
 

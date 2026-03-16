@@ -58,5 +58,17 @@ Start Server
 --------------------------------
 */
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📍 Test it at: http://localhost:${PORT}`);
+  console.log(`📊 Test DB at: http://localhost:${PORT}/test-db`);
+});
+
+// Handle uncaught errors gracefully
+process.on('unhandledRejection', (err) => {
+  console.error('❌ Unhandled error:', err);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught exception:', err);
+  process.exit(1);
 });

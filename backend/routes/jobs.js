@@ -15,11 +15,9 @@ router.post("/", authenticateToken, async (req, res) => {
     const {
       company,
       role,
-      location,
       applied_date,
       status,
-      notes,
-      job_link
+      notes
     } = req.body;
 
     // Validate required fields
@@ -31,10 +29,10 @@ router.post("/", authenticateToken, async (req, res) => {
 
     const newJob = await pool.query(
       `INSERT INTO job_applications
-      (user_id, company, role, location, applied_date, status, notes, job_link)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      (user_id, company, role, applied_date, status, notes)
+      VALUES ($1,$2,$3,$4,$5,$6)
       RETURNING *`,
-      [user_id, company, role, location, applied_date, status, notes, job_link]
+      [user_id, company, role || null, applied_date || null, status || 'Applied', notes || null]
     );
 
     res.json(newJob.rows[0]);
@@ -71,18 +69,21 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 /*
-Update Status
+Update Job Application
 Protected route - user can only update their own job applications
 */
 router.put("/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const user_id = req.user.id;
-    const { status } = req.body;
+    const { company, role, applied_date, status, notes } = req.body;
 
     const result = await pool.query(
-      "UPDATE job_applications SET status=$1 WHERE id=$2 AND user_id=$3 RETURNING *",
-      [status, id, user_id]
+      `UPDATE job_applications 
+      SET company=$1, role=$2, applied_date=$3, status=$4, notes=$5 
+      WHERE id=$6 AND user_id=$7 
+      RETURNING *`,
+      [company, role, applied_date, status, notes, id, user_id]
     );
 
     if (result.rows.length === 0) {
