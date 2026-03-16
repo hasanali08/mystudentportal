@@ -12,11 +12,14 @@ export default function Dashboard() {
   const [activeApplications, setActiveApplications] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAuthHeaders } = useAuth();
+  const { getAuthHeaders, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    // Wait for auth to finish loading before fetching data
+    if (!authLoading) {
+      fetchDashboardData();
+    }
+  }, [authLoading]);
 
   const fetchDashboardData = async () => {
     try {

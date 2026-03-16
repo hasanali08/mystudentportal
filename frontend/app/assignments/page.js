@@ -10,11 +10,14 @@ export default function AssignmentsPage() {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAuthHeaders } = useAuth();
+  const { getAuthHeaders, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchAssignments();
-  }, []);
+    // Wait for auth to finish loading before fetching data
+    if (!authLoading) {
+      fetchAssignments();
+    }
+  }, [authLoading]);
 
   const fetchAssignments = async () => {
     try {

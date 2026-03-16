@@ -10,11 +10,14 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAuthHeaders } = useAuth();
+  const { getAuthHeaders, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    // Wait for auth to finish loading before fetching data
+    if (!authLoading) {
+      fetchTasks();
+    }
+  }, [authLoading]);
 
   const fetchTasks = async () => {
     try {
